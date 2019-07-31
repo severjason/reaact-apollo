@@ -1,10 +1,10 @@
 import React from 'react';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
+import { DocumentNode } from 'graphql';
 
 import Link from './Link';
 import { Link as LinkType } from '../../types/index';
-import { DocumentNode } from 'graphql';
 
 const FEED_QUERY: DocumentNode = gql`
     {
@@ -33,6 +33,7 @@ const LinkList: React.FC = () => {
         if (error) { return <div>Error</div>; }
 
         const linksToRender: LinkType[] = data ? data.feed.links : [];
+
         return linksToRender.map(link => <Link key={link.id} link={link} />);
       }}
     </Query>

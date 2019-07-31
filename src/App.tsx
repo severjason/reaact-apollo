@@ -1,10 +1,10 @@
 import React from 'react';
-import { LinkList } from './app/links';
+import { CreateLink } from './app/links';
 
 const App = () => {
   return (
     <div>
-      <LinkList/>
+      <CreateLink/>
     </div>
   );
 };
