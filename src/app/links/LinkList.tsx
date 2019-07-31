@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 
 import Link from './Link';
-import { Link as LinkType } from '../../types/index';
+import { Link as LinkType } from '../types/index';
 
 const FEED_QUERY: DocumentNode = gql`
     {
