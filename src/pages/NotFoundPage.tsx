@@ -1,9 +1,9 @@
 import React, { lazy } from 'react';
 import { RouteComponentProps } from '@reach/router';
 
-import { Layouts } from '../shared';
+import { Layouts } from '../app/shared';
 
-const NotFoundComponent = lazy(() => import('../shared/errors/NotFound'));
+const NotFoundComponent = lazy(() => import('../app/shared/errors/NotFound'));
 
 const NotFoundPage: React.FC<RouteComponentProps> = () => (
     <Layouts.Base>

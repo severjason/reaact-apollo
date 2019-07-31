@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { Router } from '@reach/router';
 
-import { Errors } from '../shared';
+import { Errors } from '../app/shared';
 import { LinksPage, NotFoundPage, CreateLinkPage } from '../pages';
 
 const Routes: React.FC = () => {

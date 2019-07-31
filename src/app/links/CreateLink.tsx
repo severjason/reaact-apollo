@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { Mutation } from 'react-apollo';
+import { navigate } from '@reach/router';
 
 const POST_MUTATION: DocumentNode = gql`
     mutation PostMutation($description: String!, $url: String!) {
@@ -28,6 +29,10 @@ const CreateLink: React.FC = () => {
     setDescription(value);
   };
 
+  const onComplete = () => {
+    navigate('/');
+  };
+
   return (
     <div>
       <div className="flex flex-column mt3">
@@ -46,7 +51,7 @@ const CreateLink: React.FC = () => {
           placeholder="The URL for the link"
         />
       </div>
-      <Mutation mutation={POST_MUTATION} variables={{description, url}}>
+      <Mutation mutation={POST_MUTATION} variables={{description, url}} onCompleted={onComplete}>
         {(postMutation: any) => (
           <button onClick={postMutation}>Submit</button>
         )}
