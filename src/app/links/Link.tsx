@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as LinkType } from '../types';
+import { Link as LinkType } from '../../types';
 
 type OwnProps = {
   link: LinkType;

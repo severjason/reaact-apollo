@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 
 import Link from './Link';
-import { Link as LinkType } from '../types/index';
+import { Link as LinkType } from '../../types/index';
 
 const FEED_QUERY: DocumentNode = gql`
     {
@@ -29,12 +29,16 @@ const LinkList: React.FC = () => {
   return (
     <Query<Data> query={FEED_QUERY}>
       {({loading, error, data}) => {
-        if (loading) { return <div>Fetching</div>; }
-        if (error) { return <div>Error</div>; }
+        if (loading) {
+          return <div>Fetching</div>;
+        }
+        if (error) {
+          return <div>Error</div>;
+        }
 
         const linksToRender: LinkType[] = data ? data.feed.links : [];
 
-        return linksToRender.map(link => <Link key={link.id} link={link} />);
+        return linksToRender.map(link => <Link key={link.id} link={link}/>);
       }}
     </Query>
   );
