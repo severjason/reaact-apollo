@@ -70,6 +70,7 @@ const CreateLink: React.FC = () => {
       </div>
       <Mutation mutation={POST_MUTATION} variables={{description, url}} onCompleted={onComplete}>
         {(postMutation: MutationFn, {loading, error}: MutationResult) => {
+          const isDisabled = loading || !description || !url;
           return (
             <Fragment>
               {error && showError && (
@@ -77,7 +78,7 @@ const CreateLink: React.FC = () => {
                   {error.message}
                 </div>
               )}
-              <button onClick={handleMutation(postMutation)} disabled={loading || !description || !url}>Submit</button>
+              <button onClick={handleMutation(postMutation)} disabled={isDisabled}>Submit</button>
             </Fragment>
           );
         }}
