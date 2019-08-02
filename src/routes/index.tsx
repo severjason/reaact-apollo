@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { Router } from '@reach/router';
 
 import { Errors } from '../app/shared';
-import { LinksPage, NotFoundPage, CreateLinkPage } from '../pages';
+import { LinksPage, NotFoundPage, CreateLinkPage, LoginPage } from '../pages';
 
 const Routes: React.FC = () => {
   return (
@@ -11,6 +11,7 @@ const Routes: React.FC = () => {
         <Router>
           <LinksPage path="/"/>
           <CreateLinkPage path="/create"/>
+          <LoginPage path="/login"/>
           <NotFoundPage default={true}/>
         </Router>
       </Suspense>

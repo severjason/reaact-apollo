@@ -1,7 +1,14 @@
 import React from 'react';
-import { Link } from '@reach/router';
+import { Link, navigate } from '@reach/router';
+import { clearToken, isLoggedIn } from '../../../helpers';
 
 const Header: React.FC = () => {
+
+  const handleLogout = () => {
+    clearToken();
+    navigate('/login');
+  };
+
   return (
     <div className="flex pa1 justify-between nowrap orange">
       <div className="flex flex-fixed black">
@@ -13,6 +20,17 @@ const Header: React.FC = () => {
         <Link to="/create" className="ml1 no-underline black">
           submit
         </Link>
+      </div>
+      <div className="flex flex-fixed">
+        {isLoggedIn() ? (
+          <div className="ml1 pointer black" onClick={handleLogout}>
+            logout
+          </div>
+        ) : (
+          <Link to="/login" className="ml1 no-underline black">
+            login
+          </Link>
+        )}
       </div>
     </div>
   );
