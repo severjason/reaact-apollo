@@ -11,7 +11,7 @@ export type Link = {
   description: string;
   url: string;
   postedBy?: User;
-  votes?: Vote[];
+  votes: Vote[];
 };
 
 export type Vote = {
