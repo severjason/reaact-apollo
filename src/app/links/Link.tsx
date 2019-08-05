@@ -32,18 +32,17 @@ type OwnProps = {
 };
 
 const Link: React.FC<OwnProps> = ({link: { url, description, createdAt, postedBy, votes, id }, index, onUpdate}) => {
+
+  const handleUpdate = (cache: any, {data: {vote}}: any) => {
+    onUpdate(cache, vote, id);
+  };
+
   return (
     <div className="flex mt2 items-start">
       <div className="flex items-center">
         <span className="gray">{index + 1}.</span>
         {isLoggedIn() && (
-          <Mutation
-            mutation={VOTE_MUTATION}
-            variables={{linkId: id}}
-            update={(store: any, {data: {vote}}: any) => {
-              onUpdate(store, vote, id);
-            }}
-          >
+          <Mutation mutation={VOTE_MUTATION} variables={{linkId: id}} update={handleUpdate}>
             {(voteMutation: () => void) => (
               <div className="ml1 gray f11 vote" onClick={voteMutation}>
                 ▲
