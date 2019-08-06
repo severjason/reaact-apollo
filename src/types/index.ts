@@ -26,15 +26,16 @@ export type AuthPayload = {
 };
 
 export enum LinkOrderByInput {
-  description_ASC,
-  description_DESC,
-  url_ASC,
-  url_DESC,
-  createdAt_ASC,
-  createdAt_DESC,
+  description_ASC = 'description_ASC',
+  description_DESC = 'description_DESC',
+  url_ASC = 'url_ASC',
+  url_DESC = 'url_DESC',
+  createdAt_ASC = 'createdAt_ASC',
+  createdAt_DESC = 'createdAt_DESC',
 }
 
 export type Feed = {
   links: Link[];
   count: number;
 };
+
