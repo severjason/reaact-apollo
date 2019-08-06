@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
+import _noop from 'lodash/noop';
 
 import { Link as LinkType } from '../../types';
 import { isLoggedIn } from '../../helpers';
@@ -28,10 +29,11 @@ const VOTE_MUTATION = gql`
 type OwnProps = {
   link: LinkType;
   index: number;
-  onUpdate: (store: any, createVote: any, linkId: string) => void;
+  onUpdate?: (store: any, createVote: any, linkId: string) => void;
 };
 
-const Link: React.FC<OwnProps> = ({link: { url, description, createdAt, postedBy, votes, id }, index, onUpdate}) => {
+const Link: React.FC<OwnProps> =
+  ({link: { url, description, createdAt, postedBy, votes, id }, index, onUpdate = _noop}) => {
 
   const handleUpdate = (cache: any, {data: {vote}}: any) => {
     onUpdate(cache, vote, id);
