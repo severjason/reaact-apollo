@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { Mutation, MutationFn, MutationResult } from 'react-apollo';
 import { navigate } from '@reach/router';
-import { FEED_QUERY } from './LinkList';
+// import { FEED_QUERY } from './schemas';
 
 const POST_MUTATION: DocumentNode = gql`
     mutation PostMutation($description: String!, $url: String!) {
@@ -47,6 +47,8 @@ const CreateLink: React.FC = () => {
     clearValues();
   };
 
+  /*
+  Hidden because we have subscription
   const handleUpdate = (store: any, { data: { post } }: any) => {
     const data = store.readQuery({ query: FEED_QUERY });
     data.feed.links.unshift(post);
@@ -55,6 +57,7 @@ const CreateLink: React.FC = () => {
       data
     });
   };
+  */
 
   const hideError = () => {
     setShowError(false);
@@ -78,7 +81,7 @@ const CreateLink: React.FC = () => {
           placeholder="The URL for the link"
         />
       </div>
-      <Mutation mutation={POST_MUTATION} variables={{description, url}} onCompleted={onComplete} update={handleUpdate}>
+      <Mutation mutation={POST_MUTATION} variables={{description, url}} onCompleted={onComplete}>
         {(postMutation: MutationFn, {loading, error}: MutationResult) => {
           const isDisabled = loading || !description || !url;
           return (
