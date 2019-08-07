@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import { navigate } from '@reach/router';
+import { useMutation } from '@apollo/react-hooks';
+
 import { setToken } from '../../helpers';
 
 const SIGNUP_MUTATION = gql`
@@ -45,6 +46,18 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
+  const [loginMutation] = useMutation(LOGIN_MUTATION, {
+    variables: {email, password},
+    onCompleted: onComplete,
+  });
+
+  const [signUpMutation] = useMutation(SIGNUP_MUTATION, {
+    variables: {email, password, name},
+    onCompleted: onComplete,
+  });
+
+  const handleClick = () => login ? loginMutation() : signUpMutation();
+
   return (
     <div>
       <h4 className="mv3">{login ? 'Login' : 'Sign Up'}</h4>
@@ -56,17 +69,9 @@ const Login = () => {
         <input value={password} onChange={handlePassword} type="password" placeholder="Choose a safe password"/>
       </div>
       <div className="flex mt3">
-        <Mutation
-          mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
-          variables={{email, password, name}}
-          onCompleted={onComplete}
-        >
-          {(mutation: () => void) => (
-            <button className="pointer mr2 button" onClick={mutation}>
-              {login ? 'login' : 'create account'}
-            </button>
-          )}
-        </Mutation>
+        <button className="pointer mr2 button" onClick={handleClick}>
+          {login ? 'login' : 'create account'}
+        </button>
         <button className="pointer button" onClick={switchLogin}>
           {login
             ? 'need to create an account?'
