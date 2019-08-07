@@ -1,8 +1,9 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
-import { Mutation, MutationFn, MutationResult } from 'react-apollo';
 import { navigate } from '@reach/router';
+import { useMutation } from '@apollo/react-hooks';
+
 import { LINKS_PER_PAGE } from '../../constants';
 import { FEED_QUERY } from './schemas';
 import { LinkOrderByInput } from '../../types';
@@ -49,19 +50,19 @@ const CreateLink: React.FC = () => {
     clearValues();
   };
 
-  const handleUpdate = (store: any, { data: { post } }: any) => {
+  const handleUpdate = (store: any, {data: {post}}: any) => {
     const first = LINKS_PER_PAGE;
     const skip = 0;
     const orderBy = LinkOrderByInput.createdAt_DESC;
     const data = store.readQuery({
       query: FEED_QUERY,
-      variables: { first, skip, orderBy }
+      variables: {first, skip, orderBy}
     });
     data.feed.links.unshift(post);
     store.writeQuery({
       query: FEED_QUERY,
       data,
-      variables: { first, skip, orderBy }
+      variables: {first, skip, orderBy}
     });
   };
 
@@ -69,6 +70,12 @@ const CreateLink: React.FC = () => {
     setShowError(false);
   };
 
+  const [postMutation, {loading, error}] = useMutation(POST_MUTATION, {
+    variables: {description, url},
+    update: handleUpdate,
+    onCompleted: onComplete,
+  });
+  const isDisabled = loading || !description || !url;
   return (
     <div>
       <div className="flex flex-column mt3">
@@ -79,29 +86,14 @@ const CreateLink: React.FC = () => {
           type="text"
           placeholder="A description for the link"
         />
-        <input
-          className="mb2"
-          value={url}
-          onChange={updateUrl}
-          type="text"
-          placeholder="The URL for the link"
-        />
+        <input className="mb2" value={url} onChange={updateUrl} type="text" placeholder="The URL for the link"/>
       </div>
-      <Mutation mutation={POST_MUTATION} variables={{description, url}} onCompleted={onComplete} update={handleUpdate}>
-        {(postMutation: MutationFn, {loading, error}: MutationResult) => {
-          const isDisabled = loading || !description || !url;
-          return (
-            <Fragment>
-              {error && showError && (
-                <div onClick={hideError} className="w-90 ba br2 pa3 mv2 red bg-washed-red">
-                  {error.message}
-                </div>
-              )}
-              <button onClick={handleMutation(postMutation)} disabled={isDisabled}>Submit</button>
-            </Fragment>
-          );
-        }}
-      </Mutation>
+      {error && showError && (
+        <div onClick={hideError} className="w-90 ba br2 pa3 mv2 red bg-washed-red">
+          {error.message}
+        </div>
+      )}
+      <button onClick={handleMutation(postMutation)} disabled={isDisabled}>Submit</button>
     </div>
   );
 };
