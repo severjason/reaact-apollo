@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ApolloProvider } from 'react-apollo';
 import { ApolloClient } from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
@@ -30,7 +29,7 @@ const httpLink = createHttpLink({
   uri: 'http://localhost:4000',
 });
 
-const authLink = setContext((_, { headers }) => {
+const authLink = setContext((_, {headers}) => {
   return {
     headers: {
       ...headers,
@@ -40,7 +39,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const link = split(
-  ({ query }) => {
+  ({query}) => {
     const definition = getMainDefinition(query);
     return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
@@ -55,11 +54,9 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   (
-    <ApolloProvider client={client}>
-      <ApolloHooksProvider client={client}>
-        <Routes />
-      </ApolloHooksProvider>
-    </ApolloProvider>
+    <ApolloHooksProvider client={client}>
+      <Routes/>
+    </ApolloHooksProvider>
   ),
   document.getElementById('root'));
 
