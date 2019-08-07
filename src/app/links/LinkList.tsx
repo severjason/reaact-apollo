@@ -1,10 +1,9 @@
 import React, { Fragment } from 'react';
 import { navigate } from '@reach/router';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useSubscription } from '@apollo/react-hooks';
 
 import Link from './Link';
 import { Link as LinkType, LinkOrderByInput } from '../../types/index';
-import { SubscribeToMoreOptions } from 'apollo-client';
 import { FEED_QUERY, NEW_LINKS_SUBSCRIPTION } from './schemas';
 import { RouteComponentProps } from '@reach/router';
 import { LINKS_PER_PAGE } from '../../constants';
@@ -20,39 +19,31 @@ type OwnProps = {
   page?: string;
 };
 
-type SubscribeToMore = (options: SubscribeToMoreOptions) => () => void;
-
 type Props = OwnProps & RouteComponentProps;
 
 const LinkList: React.FC<Props> = ({location, page}) => {
-  const subscribeToNewLinks = (subscribeToMore: SubscribeToMore) => {
-    subscribeToMore({
-      document: NEW_LINKS_SUBSCRIPTION,
-      updateQuery: (prev, {subscriptionData}) => {
-        if (!subscriptionData.data) {
-          return prev;
-        }
-        const newLink = subscriptionData.data.newLink;
-        const exists = prev.feed.links.find(({id}: { id: string }) => id === newLink.id);
-        if (exists) {
-          return prev;
-        }
-        return Object.assign({}, prev, {
-          feed: {
-            links: [newLink, ...prev.feed.links],
-            count: prev.feed.links.length + 1,
-            __typename: prev.feed.__typename,
+  useSubscription(NEW_LINKS_SUBSCRIPTION, {
+    onSubscriptionData: ({client, subscriptionData}) => {
+      const newLink = subscriptionData.data.newLink;
+      const prev = client.readQuery({
+        query: FEED_QUERY,
+      });
+      const exists = prev.feed.links.find(({id}: { id: string }) => id === newLink.id);
+      if (exists) {
+        client.writeQuery({
+          query: FEED_QUERY,
+          data: {
+            ...prev,
+            feed: {
+              links: [newLink, ...prev.feed.links],
+              count: prev.feed.links.length + 1,
+              __typename: prev.feed.__typename,
+            }
           }
         });
       }
-    });
-  };
-
-  /*  const subscribeToNewVotes = (subscribeToMore: SubscribeToMore) => {
-      subscribeToMore({
-        document: NEW_VOTES_SUBSCRIPTION,
-      });
-    };*/
+    }
+  });
 
   const isNewPage = () => location ? location.pathname.includes('new') : false;
 
@@ -83,11 +74,6 @@ const LinkList: React.FC<Props> = ({location, page}) => {
     return {first, skip, orderBy};
   };
 
-  const subscribeToAll = (subscribeToMore: SubscribeToMore) => {
-    //  subscribeToNewVotes(subscribeToMore);
-    subscribeToNewLinks(subscribeToMore);
-  };
-
   const getLinksToRender = (data: Data) => {
     if (isNewPage()) {
       return data.feed.links;
@@ -115,7 +101,7 @@ const LinkList: React.FC<Props> = ({location, page}) => {
 
   const showPrev = () => getPage() > 1;
 
-  const {loading, error, data, subscribeToMore} =
+  const {loading, error, data} =
     useQuery<Data>(FEED_QUERY, {variables: {...getQueryVariables()}});
 
   const linksToRender = data && data.feed ? getLinksToRender(data) : [];
@@ -129,7 +115,6 @@ const LinkList: React.FC<Props> = ({location, page}) => {
 
   return (
     <Fragment>
-      {subscribeToAll(subscribeToMore)}
       {linksToRender.map((link, index) => (
         <Link
           key={link.id}
