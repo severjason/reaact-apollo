@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import moment from 'moment';
 import gql from 'graphql-tag';
 import _noop from 'lodash/noop';
@@ -57,7 +57,13 @@ const Link: React.FC<OwnProps> =
         </div>
         <div className="ml1">
           <div>
-            {description} ({url})
+            {description ? description : 'No description'}
+            {url && (
+              <Fragment>
+                {` | `}
+                <a href={url} target="_blank" rel="noopener noreferrer">link...</a>
+              </Fragment>
+            )}
           </div>
           <div className="f6 lh-copy gray">
             {votes && votes.length} votes | by{' '}
