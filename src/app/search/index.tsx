@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { withApollo, WithApolloClient, ChildProps } from 'react-apollo';
+import { useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import _getOr from 'lodash/fp/getOr';
 
@@ -29,9 +29,10 @@ const FEED_SEARCH_QUERY = gql`
     }
 `;
 
-const Search: React.FC<ChildProps<WithApolloClient<{}>>> = ({client}) => {
+const Search: React.FC<{}> = () => {
   const [filter, setFilter] = useState('');
   const [links, setLinks] = useState<LinkType[]>([]);
+  const client = useApolloClient();
 
   const handleFilter = (e: React.ChangeEvent<any>) => {
     setFilter(e.target.value);
@@ -40,7 +41,7 @@ const Search: React.FC<ChildProps<WithApolloClient<{}>>> = ({client}) => {
   const handleSearch = async () => {
     const result = await client.query({
       query: FEED_SEARCH_QUERY,
-      variables: { filter },
+      variables: {filter},
     });
     const resLinks = _getOr([], 'data.feed.links', result);
     setLinks(resLinks);
@@ -54,10 +55,10 @@ const Search: React.FC<ChildProps<WithApolloClient<{}>>> = ({client}) => {
         <button onClick={handleSearch}>OK</button>
       </div>
       {links.map((link, index) => (
-        <Link key={link.id} link={link} index={index} />
+        <Link key={link.id} link={link} index={index}/>
       ))}
     </div>
   );
 };
 
-export default withApollo(Search);
+export default Search;
