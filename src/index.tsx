@@ -8,6 +8,7 @@ import { setContext } from 'apollo-link-context';
 import { WebSocketLink } from 'apollo-link-ws';
 import { split } from 'apollo-link';
 import { getMainDefinition } from 'apollo-utilities';
+import { ApolloProvider as ApolloHooksProvider } from '@apollo/react-hooks';
 
 import './index.css';
 import Routes from './routes';
@@ -55,7 +56,9 @@ const client = new ApolloClient({
 ReactDOM.render(
   (
     <ApolloProvider client={client}>
-      <Routes />
+      <ApolloHooksProvider client={client}>
+        <Routes />
+      </ApolloHooksProvider>
     </ApolloProvider>
   ),
   document.getElementById('root'));

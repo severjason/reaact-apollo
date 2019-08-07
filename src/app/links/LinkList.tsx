@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-import { Query } from 'react-apollo';
 import { navigate } from '@reach/router';
+import { useQuery } from '@apollo/react-hooks';
 
 import Link from './Link';
 import { Link as LinkType, LinkOrderByInput } from '../../types/index';
@@ -25,8 +25,6 @@ type SubscribeToMore = (options: SubscribeToMoreOptions) => () => void;
 type Props = OwnProps & RouteComponentProps;
 
 const LinkList: React.FC<Props> = ({location, page}) => {
-
-
   const subscribeToNewLinks = (subscribeToMore: SubscribeToMore) => {
     subscribeToMore({
       document: NEW_LINKS_SUBSCRIPTION,
@@ -113,52 +111,48 @@ const LinkList: React.FC<Props> = ({location, page}) => {
     }
   };
 
-  const showNext = (data?: Data) => data && getPage() <= data.feed.count / LINKS_PER_PAGE;
+  const showNext = (data?: Data) => data && getPage() < data.feed.count / LINKS_PER_PAGE;
 
   const showPrev = () => getPage() > 1;
 
+  const {loading, error, data, subscribeToMore} =
+    useQuery<Data>(FEED_QUERY, {variables: {...getQueryVariables()}});
+
+  const linksToRender = data && data.feed ? getLinksToRender(data) : [];
+
+  if (loading) {
+    return <div>Fetching</div>;
+  }
+  if (error) {
+    return <div>Error</div>;
+  }
+
   return (
-    <Query<Data> query={FEED_QUERY} variables={getQueryVariables()}>
-      {({loading, error, data, subscribeToMore}) => {
-        if (loading) {
-          return <div>Fetching</div>;
-        }
-        if (error) {
-          return <div>Error</div>;
-        }
-
-        subscribeToAll(subscribeToMore);
-
-        const linksToRender = data ? getLinksToRender(data) : [];
-
-        return (
-          <Fragment>
-            {linksToRender.map((link, index) => (
-              <Link
-                key={link.id}
-                link={link}
-                index={index + getPageIndex()}
-                onUpdate={updateCacheAfterVote}
-              />)
-            )}
-            {isNewPage() && (
-              <div className="flex ml4 mv3 gray">
-                {showPrev() && (
-                  <div className="pointer mr2" onClick={handlePreviousPage}>
-                    Previous
-                  </div>
-                )}
-                {showNext(data) && (
-                  <div className="pointer" onClick={handleNextPage}>
-                    Next
-                  </div>
-                )}
-              </div>
-            )}
-          </Fragment>
-        );
-      }}
-    </Query>
+    <Fragment>
+      {subscribeToAll(subscribeToMore)}
+      {linksToRender.map((link, index) => (
+        <Link
+          key={link.id}
+          link={link}
+          index={index + getPageIndex()}
+          onUpdate={updateCacheAfterVote}
+        />)
+      )}
+      {isNewPage() && (
+        <div className="flex ml4 mv3 gray">
+          {showPrev() && (
+            <div className="pointer mr2" onClick={handlePreviousPage}>
+              Previous
+            </div>
+          )}
+          {showNext(data) && (
+            <div className="pointer" onClick={handleNextPage}>
+              Next
+            </div>
+          )}
+        </div>
+      )}
+    </Fragment>
   );
 };
 
